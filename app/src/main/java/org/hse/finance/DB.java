@@ -47,6 +47,7 @@ public class DB extends SQLiteOpenHelper {
                 SPEND_NAME + " TEXT NOT NULL," +
                 SPEND_CAT + " TEXT NOT NULL," +
                 SPEND_COST + " INTEGER NOT NULL," +
+                SPEND_DATE + " TEXT," +
                 "FOREIGN KEY (" + SPEND_CAT + ") REFERENCES " + T_CAT + "(" + CAT_NAME + "))";
         db.execSQL(createSpendTable);
 
@@ -57,11 +58,11 @@ public class DB extends SQLiteOpenHelper {
 
         // Добавляем траты
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Обед', 1, 500)");
+                "VALUES ('Обед', 'Еда', 500)");
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Такси', 2, 300)");
+                "VALUES ('Такси', 'Транспорт', 300)");
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Кино', 3, 700)");
+                "VALUES ('Кино', 'Развлечения', 700)");
     }
 
     @Override
