@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        homeBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, QrScannerActivity.class);
+            startActivityForResult(intent, 100);
+        });
+
         // Добавьте обработчики кликов по кнопкам при необходимости
     }
 
@@ -98,6 +104,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Обновляем диаграмму
         pieChart.invalidate();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            String qrText = data.getStringExtra("qr_result");
+            // Покажи или обработай
+            Toast.makeText(this, "QR: " + qrText, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
