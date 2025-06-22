@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.util.Printer;
 
 import androidx.annotation.Nullable;
 
@@ -24,7 +23,7 @@ public class DB extends SQLiteOpenHelper {
     public static final String CAT_NAME = "cat_name";
     public static final String SPEND_ID = "_id";
     public static final String SPEND_NAME = "spend_name";
-    public static final String SPEND_CAT = "cat_name";
+    public static final String SPEND_CAT = "cat_id";
     public static final String SPEND_COST = "spend_cost";
     public static final String SPEND_DATE = "spend_date";
 
@@ -45,10 +44,10 @@ public class DB extends SQLiteOpenHelper {
         String createSpendTable = "CREATE TABLE " + T_SPEND + "(" +
                 SPEND_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 SPEND_NAME + " TEXT NOT NULL," +
-                SPEND_CAT + " TEXT NOT NULL," +
+                SPEND_CAT + " INTEGER NOT NULL," +              // INTEGER, а не TEXT
                 SPEND_COST + " INTEGER NOT NULL," +
                 SPEND_DATE + " TEXT," +
-                "FOREIGN KEY (" + SPEND_CAT + ") REFERENCES " + T_CAT + "(" + CAT_NAME + "))";
+                "FOREIGN KEY (" + SPEND_CAT + ") REFERENCES " + T_CAT + "(" + CAT_ID + "))";
         db.execSQL(createSpendTable);
 
         // Добавляем категории
@@ -56,13 +55,17 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Транспорт')");
         db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Развлечения')");
 
+        int foodCatId = getCategoryIdByName(db, "Еда");
+        int transportCatId = getCategoryIdByName(db, "Транспорт");
+        int funCatId = getCategoryIdByName(db, "Развлечения");
+
         // Добавляем траты
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Обед', 'Еда', 500)");
+                "VALUES ('Обед', " + foodCatId + ", 500)");
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Такси', 'Транспорт', 300)");
+                "VALUES ('Такси'," + transportCatId + " , 300)");
         db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Кино', 'Развлечения', 700)");
+                "VALUES ('Кино', " + funCatId + ", 700)");
     }
 
     @Override
@@ -70,6 +73,16 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + T_SPEND);
         db.execSQL("DROP TABLE IF EXISTS " + T_CAT);
         onCreate(db);
+    }
+
+    private int getCategoryIdByName(SQLiteDatabase db, String catName) {
+        int id = -1;
+        Cursor cursor = db.rawQuery("SELECT " + CAT_ID + " FROM " + T_CAT + " WHERE " + CAT_NAME + "=?", new String[]{catName});
+        if (cursor.moveToFirst()) {
+            id = cursor.getInt(cursor.getColumnIndexOrThrow(CAT_ID));
+        }
+        cursor.close();
+        return id;
     }
 
     public Map<String, Integer> getCategorySums() {
@@ -111,9 +124,12 @@ public class DB extends SQLiteOpenHelper {
     public boolean deleteCategory(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
         try {
-            // Сначала удалим все траты, связанные с этой категорией
-            db.delete(T_SPEND, SPEND_CAT + "=?", new String[]{name});
-            // Затем удалим саму категорию
+            // Сначала удаляем траты с этой категорией (по cat_id)
+            int catId = getCategoryIdByName(db, name);
+            if (catId != -1) {
+                db.delete(T_SPEND, SPEND_CAT + "=?", new String[]{String.valueOf(catId)});
+            }
+            // Затем удаляем саму категорию
             db.delete(T_CAT, CAT_NAME + "=?", new String[]{name});
             return true;
         } catch (Exception e) {
@@ -161,25 +177,28 @@ public class DB extends SQLiteOpenHelper {
         return categories;
     }
 
-    public List<Expense> getExpenses(String category, String startDate, String endDate) {
+    public List<Expense> getExpenses(String categoryNameFilter, String startDate, String endDate) {
         List<Expense> expenses = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT * FROM " + T_SPEND + " WHERE 1=1";
+        String query = "SELECT s." + SPEND_NAME + ", s." + SPEND_COST + ", s." + SPEND_DATE + ", c." + CAT_NAME +
+                " FROM " + T_SPEND + " s INNER JOIN " + T_CAT + " c ON s." + SPEND_CAT + " = c." + CAT_ID +
+                " WHERE 1=1";
+
         List<String> args = new ArrayList<>();
 
-        if (category != null) {
-            query += " AND " + SPEND_CAT + "=?";
-            args.add(category);
+        if (categoryNameFilter != null) {
+            query += " AND c." + CAT_NAME + "=?";
+            args.add(categoryNameFilter);
         }
 
         if (startDate != null) {
-            query += " AND " + SPEND_DATE + ">=?";
+            query += " AND s." + SPEND_DATE + ">=?";
             args.add(startDate);
         }
 
         if (endDate != null) {
-            query += " AND " + SPEND_DATE + "<=?";
+            query += " AND s." + SPEND_DATE + "<=?";
             args.add(endDate);
         }
 
@@ -190,7 +209,7 @@ public class DB extends SQLiteOpenHelper {
                 expenses.add(new Expense(
                         cursor.getString(cursor.getColumnIndexOrThrow(SPEND_NAME)),
                         cursor.getDouble(cursor.getColumnIndexOrThrow(SPEND_COST)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_CAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(CAT_NAME)),  // имя категории теперь из join
                         cursor.getString(cursor.getColumnIndexOrThrow(SPEND_DATE))
                 ));
             } while (cursor.moveToNext());
