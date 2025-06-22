@@ -4,29 +4,30 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import android.util.Printer;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DB extends SQLiteOpenHelper {
 
-    // Версия увеличена до 2 (для пересоздания базы с новой колонкой)
     public static final int DB_VERS = 2;
     public static final String DB_NAME = "Finance";
-
     public static final String T_CAT = "categories";
     public static final String T_SPEND = "spendings";
-
     public static final String CAT_ID = "_id";
     public static final String CAT_NAME = "cat_name";
-
     public static final String SPEND_ID = "_id";
     public static final String SPEND_NAME = "spend_name";
     public static final String SPEND_CAT = "cat_name";
     public static final String SPEND_COST = "spend_cost";
     public static final String SPEND_DATE = "spend_date";
+
 
     public DB(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERS);
@@ -34,21 +35,33 @@ public class DB extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Таблица категорий
+        // Создаем таблицу категорий
         String createCatTable = "CREATE TABLE " + T_CAT + "(" +
                 CAT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 CAT_NAME + " TEXT UNIQUE NOT NULL)";
         db.execSQL(createCatTable);
 
-        // Таблица трат с датой
+        // Создаем таблицу трат
         String createSpendTable = "CREATE TABLE " + T_SPEND + "(" +
                 SPEND_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 SPEND_NAME + " TEXT NOT NULL," +
                 SPEND_CAT + " TEXT NOT NULL," +
                 SPEND_COST + " INTEGER NOT NULL," +
-                SPEND_DATE + " TEXT NOT NULL," +
                 "FOREIGN KEY (" + SPEND_CAT + ") REFERENCES " + T_CAT + "(" + CAT_NAME + "))";
         db.execSQL(createSpendTable);
+
+        // Добавляем категории
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Еда')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Транспорт')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Развлечения')");
+
+        // Добавляем траты
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
+                "VALUES ('Обед', 1, 500)");
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
+                "VALUES ('Такси', 2, 300)");
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
+                "VALUES ('Кино', 3, 700)");
     }
 
     @Override
@@ -64,6 +77,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         try {
+            // Модифицированный запрос с JOIN к таблице категорий
             String query = "SELECT " + T_CAT + "." + CAT_NAME + ", " +
                     "SUM(" + T_SPEND + "." + SPEND_COST + ") as total " +
                     "FROM " + T_SPEND + " " +
@@ -73,6 +87,7 @@ public class DB extends SQLiteOpenHelper {
 
             cursor = db.rawQuery(query, null);
 
+            Log.d("DEBUG", "Категории расходов: найдено строк -> " + cursor.getCount());
             if (cursor != null && cursor.moveToFirst()) {
                 int catNameIndex = cursor.getColumnIndex(CAT_NAME);
                 int totalIndex = cursor.getColumnIndex("total");
@@ -89,29 +104,25 @@ public class DB extends SQLiteOpenHelper {
             }
             db.close();
         }
-
         return result;
     }
 
-    public void addTestData() {
+    public boolean deleteCategory(String name) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        // Добавляем категории
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Еда')");
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Транспорт')");
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Развлечения')");
-
-        // Добавляем траты с датами (формат YYYY-MM-DD)
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
-                "VALUES ('Обед', 1, 500, '2025-06-22')");
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
-                "VALUES ('Такси', 2, 300, '2025-06-21')");
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
-                "VALUES ('Кино', 3, 700, '2025-06-20')");
-
-        db.close();
+        try {
+            // Сначала удалим все траты, связанные с этой категорией
+            db.delete(T_SPEND, SPEND_CAT + "=?", new String[]{name});
+            // Затем удалим саму категорию
+            db.delete(T_CAT, CAT_NAME + "=?", new String[]{name});
+            return true;
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при удалении категории: " + name, e);
+            return false;
+        } finally {
+            db.close();
+        }
     }
-    
+
     public boolean addCategory(String categoryName) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -125,19 +136,27 @@ public class DB extends SQLiteOpenHelper {
             db.close();
         }
     }
-        
+
     public List<String> getAllCategories() {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT " + CAT_NAME + " FROM " + T_CAT, null);
+        Cursor cursor = null;
 
-        if (cursor.moveToFirst()) {
-            do {
-                categories.add(cursor.getString(0));
-            } while (cursor.moveToNext());
+        try {
+            cursor = db.rawQuery("SELECT " + CAT_NAME + " FROM " + T_CAT + " ORDER BY " + CAT_NAME, null);
+            if (cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(CAT_NAME);
+                do {
+                    categories.add(cursor.getString(nameIndex));
+                } while (cursor.moveToNext());
+            }
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при получении категорий", e);
+        } finally {
+            if (cursor != null) cursor.close();
+            db.close();
         }
-        cursor.close();
-        db.close();
+
         return categories;
     }
 
