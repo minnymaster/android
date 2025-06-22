@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         pieChart.setHoleColor(android.R.color.transparent);
         pieChart.setTransparentCircleRadius(61f);
         pieChart.animateY(1000);
+        pieChart.getLegend().setEnabled(false);
     }
 
     private void loadChartData() {
