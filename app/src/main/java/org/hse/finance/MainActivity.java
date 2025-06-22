@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Добавьте обработчики кликов по кнопкам при необходимости
+        
     }
 
 
