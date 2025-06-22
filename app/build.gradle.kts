@@ -43,4 +43,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
 }
