@@ -65,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, 100);
         });
 
+        spendingBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ExpensesActivity.class);
+            startActivity(intent);
+        });
+
         // Добавьте обработчики кликов по кнопкам при необходимости
     }
 
