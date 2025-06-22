@@ -46,6 +46,12 @@ public class DB extends SQLiteOpenHelper {
                 SPEND_CAT + " TEXT NOT NULL," +
                 SPEND_COST + " INTEGER NOT NULL," +
                 "FOREIGN KEY (" + SPEND_CAT + ") REFERENCES " + T_CAT + "(" + CAT_NAME + "))";
+
+        // сразу вставляем тестовые данные
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Еда')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Транспорт')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Развлечения')");
+
         db.execSQL(createSpendTable);
     }
 
@@ -90,25 +96,6 @@ public class DB extends SQLiteOpenHelper {
         }
 
         return result;
-    }
-
-    public void addTestData() {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // Добавляем категории
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Еда')");
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Транспорт')");
-        db.execSQL("INSERT INTO " + T_CAT + "(" + CAT_NAME + ") VALUES ('Развлечения')");
-
-        // Добавляем траты
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Обед', 1, 500)");
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Такси', 2, 300)");
-        db.execSQL("INSERT INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Кино', 3, 700)");
-
-        db.close();
     }
 
     public boolean addCategory(String categoryName) {

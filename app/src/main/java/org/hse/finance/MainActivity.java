@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         // Инициализация диаграммы
         pieChart = findViewById(R.id.pieChart);
         setupPieChart();
-        dbHelper.addTestData();
 
         // Загрузка данных в диаграмму
         loadChartData();
