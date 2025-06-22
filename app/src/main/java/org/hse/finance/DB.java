@@ -134,4 +134,113 @@ public class DB extends SQLiteOpenHelper {
 
         return categories;
     }
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + CAT_NAME + " FROM " + T_CAT, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
+    public List<Expense> getExpenses(String category, String startDate, String endDate) {
+        List<Expense> expenses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + T_SPEND + " WHERE 1=1";
+        List<String> args = new ArrayList<>();
+
+        if (category != null) {
+            query += " AND " + SPEND_CAT + "=?";
+            args.add(category);
+        }
+
+        if (startDate != null) {
+            query += " AND " + SPEND_DATE + ">=?";
+            args.add(startDate);
+        }
+
+        if (endDate != null) {
+            query += " AND " + SPEND_DATE + "<=?";
+            args.add(endDate);
+        }
+
+        Cursor cursor = db.rawQuery(query, args.toArray(new String[0]));
+
+        if (cursor.moveToFirst()) {
+            do {
+                expenses.add(new Expense(
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_NAME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(SPEND_COST)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_CAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_DATE))
+                ));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return expenses;
+    }
+
+    public List<String> getAllCategories() {
+        List<String> categories = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + CAT_NAME + " FROM " + T_CAT, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                categories.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return categories;
+    }
+
+    public List<Expense> getExpenses(String category, String startDate, String endDate) {
+        List<Expense> expenses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + T_SPEND + " WHERE 1=1";
+        List<String> args = new ArrayList<>();
+
+        if (category != null) {
+            query += " AND " + SPEND_CAT + "=?";
+            args.add(category);
+        }
+
+        if (startDate != null) {
+            query += " AND " + SPEND_DATE + ">=?";
+            args.add(startDate);
+        }
+
+        if (endDate != null) {
+            query += " AND " + SPEND_DATE + "<=?";
+            args.add(endDate);
+        }
+
+        Cursor cursor = db.rawQuery(query, args.toArray(new String[0]));
+
+        if (cursor.moveToFirst()) {
+            do {
+                expenses.add(new Expense(
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_NAME)),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow(SPEND_COST)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_CAT)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(SPEND_DATE))
+                ));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return expenses;
+    }
 }
