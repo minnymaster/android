@@ -111,7 +111,22 @@ public class DB extends SQLiteOpenHelper {
 
         db.close();
     }
-        public List<String> getAllCategories() {
+    
+    public boolean addCategory(String categoryName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.execSQL("INSERT INTO " + T_CAT + " (" + CAT_NAME + ") VALUES (?)", new Object[]{categoryName});
+            return true;
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при добавлении категории: " + categoryName, e);
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+        
+    public List<String> getAllCategories() {
         List<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT " + CAT_NAME + " FROM " + T_CAT, null);
