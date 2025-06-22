@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Finance</string>
     <string name="main_title">ВСЕ ТРАТЫ</string>
+
+    <!-- Add Category Screen -->
+    <string name="add_category_title">Добавить категорию</string>
+    <string name="hint_category_name">Название категории</string>
+    <string name="button_add_category">Добавить</string>
+    <string name="categories_label">Список категорий:</string>
 </resources>
