@@ -2,6 +2,7 @@ package org.hse.finance;
 
 import android.os.Bundle;
 import android.view.View;
+import android.content.Intent;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
@@ -52,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
         ImageButton homeBtn = findViewById(R.id.imageButton);
         ImageButton optionsBtn = findViewById(R.id.imageButton2);
         ImageButton spendingBtn = findViewById(R.id.imageButton3);
+
+        optionsBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
+            startActivity(intent);
+        });
 
         // Добавьте обработчики кликов по кнопкам при необходимости
     }
