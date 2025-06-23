@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Поле названия траты -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:errorEnabled="true"
+            app:boxStrokeColor="?attr/colorPrimary"
+            app:hintTextColor="?attr/colorOnSurface">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/expenseNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Название траты"
+                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Поле суммы -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:errorEnabled="true"
+            app:prefixText="₽"
+            app:prefixTextColor="?attr/colorOnSurface"
+            app:boxStrokeColor="?attr/colorPrimary"
+            app:hintTextColor="?attr/colorOnSurface">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/expenseAmountEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Сумма"
+                android:inputType="numberDecimal"
+                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Выпадающий список категорий -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxStrokeColor="?attr/colorPrimary"
+            app:hintTextColor="?attr/colorOnSurface">
+
+            <AutoCompleteTextView
+                android:id="@+id/categorySpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Категория"
+                android:inputType="none"
+                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Поле даты -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:errorEnabled="true"
+            app:boxStrokeColor="?attr/colorPrimary"
+            app:hintTextColor="?attr/colorOnSurface">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Дата (ГГГГ-ММ-ДД)"
+                android:inputType="date"
+                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Кнопка сохранения -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveButton"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Сохранить"
+            app:cornerRadius="28dp"
+            app:backgroundTint="?attr/colorPrimary"
+            android:textColor="?attr/colorOnPrimary"
+            style="@style/Widget.MaterialComponents.Button"/>
+    </LinearLayout>
+</ScrollView>

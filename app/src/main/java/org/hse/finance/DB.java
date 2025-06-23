@@ -1,5 +1,6 @@
 package org.hse.finance;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -26,8 +27,6 @@ public class DB extends SQLiteOpenHelper {
     public static final String SPEND_CAT = "cat_id";
     public static final String SPEND_COST = "spend_cost";
     public static final String SPEND_DATE = "spend_date";
-
-
     public DB(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERS);
     }
@@ -218,5 +217,32 @@ public class DB extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return expenses;
+    }
+
+    public boolean addExpense(String name, int cost, String categoryName, String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            // Получаем ID категории по имени
+            int catId = getCategoryIdByName(db, categoryName);
+            if (catId == -1) {
+                Log.e("DB_ERROR", "Категория не найдена: " + categoryName);
+                return false;
+            }
+
+            // Вставляем новую трату
+            ContentValues values = new ContentValues();
+            values.put(SPEND_NAME, name);
+            values.put(SPEND_CAT, catId);
+            values.put(SPEND_COST, cost);
+            values.put(SPEND_DATE, date);
+
+            long result = db.insert(T_SPEND, null, values);
+            return result != -1;  // true, если запись успешно добавлена
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при добавлении траты", e);
+            return false;
+        } finally {
+            db.close();
+        }
     }
 }
