@@ -1,5 +1,6 @@
 package org.hse.finance;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +28,15 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         Expense expense = expenseList.get(position);
         holder.textName.setText(expense.getName());
         holder.textCategory.setText(expense.getCategory());
-        holder.textAmount.setText(String.format("%.2f", expense.getAmount()));
+        holder.textAmount.setText(String.format("%.2f ₽", expense.getAmount()));
         holder.textDate.setText(expense.getDate());
+
+        // Чередование цвета
+        if (position % 2 == 0) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#F5F5F5")); // светло-серый
+        } else {
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }
     }
 
     @Override

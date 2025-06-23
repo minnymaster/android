@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- Фильтр по категориям -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:paddingBottom="8dp">
 
         <Spinner
             android:id="@+id/spinnerCategories"
@@ -25,8 +25,60 @@
             android:text="Фильтр" />
     </LinearLayout>
 
+    <!-- Заголовок списка -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#E0E0E0"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="4dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:text="Название"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:paddingEnd="8dp"
+            android:gravity="start"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:text="Категория"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:paddingEnd="8dp"
+            android:gravity="start"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Сумма"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="end"
+            android:paddingEnd="8dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Дата"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:gravity="end"/>
+    </LinearLayout>
+
+    <!-- Список -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewExpenses"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="4dp" />
 </LinearLayout>

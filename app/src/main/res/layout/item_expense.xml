@@ -3,35 +3,47 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:paddingVertical="12dp"
+    android:paddingHorizontal="4dp"
+    android:background="?android:attr/selectableItemBackground">
 
     <TextView
         android:id="@+id/textName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:textSize="16sp"/>
+        android:layout_weight="1.5"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:paddingEnd="8dp"
+        android:gravity="start"/>
 
     <TextView
         android:id="@+id/textCategory"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="16sp"/>
+        android:layout_weight="1.5"
+        android:textSize="14sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:paddingEnd="8dp"
+        android:gravity="start"/>
 
     <TextView
         android:id="@+id/textAmount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="16sp"
-        android:textAlignment="textEnd"/>
+        android:gravity="end"
+        android:paddingEnd="8dp"
+        android:textColor="#30B100"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/textDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="14sp"
-        android:textAlignment="textEnd"/>
+        android:textSize="12sp"
+        android:gravity="end"/>
 </LinearLayout>
