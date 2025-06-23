@@ -60,12 +60,12 @@ public class DB extends SQLiteOpenHelper {
         int funCatId = getCategoryIdByName(db, "Развлечения");
 
         // Добавляем траты
-        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Обед', " + foodCatId + ", 500)");
-        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Такси'," + transportCatId + " , 300)");
-        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + ") " +
-                "VALUES ('Кино', " + funCatId + ", 700)");
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
+                "VALUES ('Обед', " + foodCatId + ", 500, '2025-06-18')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
+                "VALUES ('Такси'," + transportCatId + " , 300, '2025-06-19')");
+        db.execSQL("INSERT OR IGNORE INTO " + T_SPEND + "(" + SPEND_NAME + "," + SPEND_CAT + "," + SPEND_COST + "," + SPEND_DATE + ") " +
+                "VALUES ('Кино', " + funCatId + ", 700, '2025-06-20')");
     }
 
     @Override

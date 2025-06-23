@@ -15,7 +15,8 @@
             android:id="@+id/spinnerCategories"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:minHeight="48dp" />
 
         <Button
             android:id="@+id/buttonFilter"
