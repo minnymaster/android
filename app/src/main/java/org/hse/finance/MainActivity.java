@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         categoryBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         });
 
         qrScanerBtn.setOnClickListener(v -> {

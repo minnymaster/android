@@ -17,6 +17,7 @@ public class CategoryActivity extends AppCompatActivity {
     private CategoryAdapter adapter;
     private List<String> categoryList = new ArrayList<>();
     private RecyclerView recyclerView;
+    private boolean dataChanged = false; // Флаг изменения данных
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class CategoryActivity extends AppCompatActivity {
             if (success) {
                 Toast.makeText(this, "Категория удалена", Toast.LENGTH_SHORT).show();
                 loadCategories();
+                dataChanged = true; // Устанавливаем флаг изменения
             } else {
                 Toast.makeText(this, "Ошибка удаления", Toast.LENGTH_SHORT).show();
             }
@@ -69,5 +71,23 @@ public class CategoryActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Отмена", null)
                 .show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Устанавливаем результат только если были изменения
+        if (dataChanged) {
+            setResult(RESULT_OK);
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Аналогично для других способов закрытия активности
+        if (dataChanged && isFinishing()) {
+            setResult(RESULT_OK);
+        }
+        super.onDestroy();
     }
 }
