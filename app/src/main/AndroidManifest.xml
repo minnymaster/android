@@ -38,6 +38,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".QrScannerActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".ItemAdd"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

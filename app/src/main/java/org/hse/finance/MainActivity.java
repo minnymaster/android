@@ -72,8 +72,15 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Добавьте обработчики кликов по кнопкам при необходимости
+        addSpendingBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ItemAdd.class);
+            startActivityForResult(intent, 1); // Используем startActivityForResult с requestCode
+        });
+
+
     }
+
+
 
 
 
@@ -89,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         pieChart.getLegend().setEnabled(false);
     }
 
-    private void loadChartData() {
+    public void loadChartData() {
         // Получаем данные из БД
         Map<String, Integer> categorySums = dbHelper.getCategorySums();
 
@@ -118,10 +125,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100 && resultCode == RESULT_OK) {
-            String qrText = data.getStringExtra("qr_result");
-            // Покажи или обработай
-            Toast.makeText(this, "QR: " + qrText, Toast.LENGTH_SHORT).show();
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            loadChartData(); // Обновляем данные
+            Toast.makeText(this, "Данные обновлены", Toast.LENGTH_SHORT).show();
         }
     }
 
