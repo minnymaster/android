@@ -2,6 +2,8 @@ package org.hse.finance;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -29,6 +31,36 @@ public class ItemAdd extends AppCompatActivity {
         dbHelper = new DB(this);
         setupUI();
         setupCloseKeyboardOnTouchOutside();
+
+        // Обрабатываем предзаполненные данные
+        handlePrefilledData();
+    }
+
+    private void handlePrefilledData() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            // Обрабатываем сумму
+            String prefilledAmount = formatAmountFromQR(intent.getStringExtra("prefilled_amount"));
+            if (prefilledAmount != null) {
+                EditText amountInput = findViewById(R.id.expenseAmountEditText);
+                amountInput.setText(prefilledAmount);
+            }
+
+            // Обрабатываем дату
+            String prefilledDate = intent.getStringExtra("prefilled_date");
+            if (prefilledDate != null && !prefilledDate.isEmpty()) {
+                EditText dateInput = findViewById(R.id.dateEditText);
+                dateInput.setText(prefilledDate);
+            }
+
+            // Автоматически ставим фокус на поле названия
+            EditText nameInput = findViewById(R.id.expenseNameEditText);
+            nameInput.requestFocus();
+
+            // Показываем клавиатуру
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(nameInput, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     private void setupUI() {
@@ -105,6 +137,14 @@ public class ItemAdd extends AppCompatActivity {
                 dbHelper.getAllCategories()
         );
         dropdown.setAdapter(adapter);
+    }
+
+    private String formatAmountFromQR(String qrAmount) {
+        if (qrAmount == null) return "";
+        if (qrAmount.endsWith(".00")) {
+            return qrAmount.substring(0, qrAmount.length() - 3);
+        }
+        return qrAmount;
     }
 
     private boolean validateInput(String name, String amount, String date) {

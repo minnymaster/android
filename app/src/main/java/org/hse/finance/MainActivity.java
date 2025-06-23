@@ -125,9 +125,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            loadChartData(); // Обновляем данные
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            String amount = data.getStringExtra("qr_amount");
+            String date = data.getStringExtra("qr_date");
+            if (amount == null || amount.isEmpty()) {
+                // Если сумма не распознана
+                Toast.makeText(this, "Не удалось прочитать данные QR-кода", Toast.LENGTH_LONG).show();
+            } else {
+                // Форматируем дату из формата чека (t=20240101T1200) в yyyy-MM-dd
+                String formattedDate = formatDateFromQR(date);
+
+                // Запускаем ItemAdd с предзаполненными данными
+                Intent addItemIntent = new Intent(this, ItemAdd.class);
+                addItemIntent.putExtra("prefilled_amount", amount);
+                addItemIntent.putExtra("prefilled_date", formattedDate);
+                startActivityForResult(addItemIntent, 1);
+            }
+        } else if (requestCode == 1 && resultCode == RESULT_OK) {
+            loadChartData();
             Toast.makeText(this, "Данные обновлены", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Преобразуем дату из формата 20240101T1200 в 2024-01-01
+    private String formatDateFromQR(String qrDate) {
+        if (qrDate == null || qrDate.length() < 8) return "";
+        try {
+            String year = qrDate.substring(0, 4);
+            String month = qrDate.substring(4, 6);
+            String day = qrDate.substring(6, 8);
+            return year + "-" + month + "-" + day;
+        } catch (Exception e) {
+            return "";
         }
     }
 
