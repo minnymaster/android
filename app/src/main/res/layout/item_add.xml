@@ -25,7 +25,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Название траты"
-                android:textColorHint="?attr/colorOnSurfaceVariant"/>
+                android:textColorHint="?attr/colorOnSurfaceVariant"
+                android:singleLine="true"
+                android:imeOptions="actionNext"
+                android:maxLines="1"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Поле суммы -->
@@ -64,6 +67,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Категория"
                 android:inputType="none"
+                android:focusable="false"
+                android:clickable="true"
                 android:textColorHint="?attr/colorOnSurfaceVariant"/>
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -81,7 +86,7 @@
                 android:id="@+id/dateEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Дата (ГГГГ-ММ-ДД)"
+                    android:hint="Дата (ГГГГ-ММ-ДД)"
                 android:inputType="date"
                 android:textColorHint="?attr/colorOnSurfaceVariant"/>
         </com.google.android.material.textfield.TextInputLayout>
