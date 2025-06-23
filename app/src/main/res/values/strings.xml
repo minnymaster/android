@@ -7,4 +7,9 @@
     <string name="hint_category_name">Название категории</string>
     <string name="button_add_category">Добавить</string>
     <string name="categories_label">Список категорий:</string>
+    <!-- Main Screen -->
+    <string name="categories_btn">Категории</string>
+    <string name="spendings_btn">Траты</string>
+    <string name="add_spending_btn">Добавить</string>
+    <string name="qr_btn">QR-сканер</string>
 </resources>
