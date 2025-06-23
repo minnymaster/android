@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.content.Intent;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -51,16 +52,17 @@ public class MainActivity extends AppCompatActivity {
         loadChartData();
 
         // Обработчики кнопок (если нужно)
-        ImageButton homeBtn = findViewById(R.id.imageButton);
-        ImageButton optionsBtn = findViewById(R.id.imageButton2);
-        ImageButton spendingBtn = findViewById(R.id.imageButton3);
+        LinearLayout qrScanerBtn = findViewById(R.id.buttonQrScan);
+        LinearLayout addSpendingBtn = findViewById(R.id.buttonAddExpense);
+        LinearLayout spendingBtn = findViewById(R.id.buttonExpenses);
+        LinearLayout categoryBtn = findViewById(R.id.buttonCategories);
 
-        optionsBtn.setOnClickListener(v -> {
+        categoryBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, CategoryActivity.class);
             startActivity(intent);
         });
 
-        homeBtn.setOnClickListener(v -> {
+        qrScanerBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QrScannerActivity.class);
             startActivityForResult(intent, 100);
         });
