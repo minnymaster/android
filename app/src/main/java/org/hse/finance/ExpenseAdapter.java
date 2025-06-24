@@ -11,29 +11,33 @@ import java.util.List;
 
 public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder> {
     private List<Expense> expenseList;
+    private OnItemClickListener listener;
 
-    public ExpenseAdapter(List<Expense> expenseList) {
+    public interface OnItemClickListener {
+        void onItemClick(Expense expense);
+    }
+
+    public ExpenseAdapter(List<Expense> expenseList, OnItemClickListener listener) {
         this.expenseList = expenseList;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ExpenseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_expense, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_expense, parent, false);
         return new ExpenseViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ExpenseViewHolder holder, int position) {
         Expense expense = expenseList.get(position);
-        holder.textName.setText(expense.getName());
-        holder.textCategory.setText(expense.getCategory());
-        holder.textAmount.setText(String.format("%.2f ₽", expense.getAmount()));
-        holder.textDate.setText(expense.getDate());
+        holder.bind(expense, listener);
 
         // Чередование цвета
         if (position % 2 == 0) {
-            holder.itemView.setBackgroundColor(Color.parseColor("#F5F5F5")); // светло-серый
+            holder.itemView.setBackgroundColor(Color.parseColor("#F5F5F5"));
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE);
         }
@@ -53,6 +57,15 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
             textAmount = itemView.findViewById(R.id.textAmount);
             textCategory = itemView.findViewById(R.id.textCategory);
             textDate = itemView.findViewById(R.id.textDate);
+        }
+
+        public void bind(final Expense expense, final OnItemClickListener listener) {
+            textName.setText(expense.getName());
+            textCategory.setText(expense.getCategory());
+            textAmount.setText(String.format("%.2f ₽", expense.getAmount()));
+            textDate.setText(expense.getDate());
+
+            itemView.setOnClickListener(v -> listener.onItemClick(expense));
         }
     }
 }

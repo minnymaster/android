@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         spendingBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ExpensesActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1);
         });
 
         addSpendingBtn.setOnClickListener(v -> {

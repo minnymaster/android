@@ -180,9 +180,11 @@ public class DB extends SQLiteOpenHelper {
         List<Expense> expenses = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT s." + SPEND_NAME + ", s." + SPEND_COST + ", s." + SPEND_DATE + ", c." + CAT_NAME +
-                " FROM " + T_SPEND + " s INNER JOIN " + T_CAT + " c ON s." + SPEND_CAT + " = c." + CAT_ID +
-                " WHERE 1=1";
+        String query = "SELECT s." + SPEND_ID + ", s." + SPEND_NAME + ", s." + SPEND_COST + ", " +
+                "s." + SPEND_DATE + ", c." + CAT_NAME + " " +
+                "FROM " + T_SPEND + " s " +
+                "INNER JOIN " + T_CAT + " c ON s." + SPEND_CAT + " = c." + CAT_ID + " " +
+                "WHERE 1=1";
 
         List<String> args = new ArrayList<>();
 
@@ -206,9 +208,10 @@ public class DB extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 expenses.add(new Expense(
+                        cursor.getInt(cursor.getColumnIndexOrThrow(SPEND_ID)),
                         cursor.getString(cursor.getColumnIndexOrThrow(SPEND_NAME)),
                         cursor.getDouble(cursor.getColumnIndexOrThrow(SPEND_COST)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(CAT_NAME)),  // имя категории теперь из join
+                        cursor.getString(cursor.getColumnIndexOrThrow(CAT_NAME)),
                         cursor.getString(cursor.getColumnIndexOrThrow(SPEND_DATE))
                 ));
             } while (cursor.moveToNext());
@@ -240,6 +243,83 @@ public class DB extends SQLiteOpenHelper {
             return result != -1;  // true, если запись успешно добавлена
         } catch (Exception e) {
             Log.e("DB_ERROR", "Ошибка при добавлении траты", e);
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    public Expense getExpenseById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Expense expense = null;
+
+        String query = "SELECT s." + SPEND_ID + ", s." + SPEND_NAME + ", s." + SPEND_COST + ", " +
+                "s." + SPEND_DATE + ", c." + CAT_NAME + " " +
+                "FROM " + T_SPEND + " s " +
+                "INNER JOIN " + T_CAT + " c ON s." + SPEND_CAT + " = c." + CAT_ID + " " +
+                "WHERE s." + SPEND_ID + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(id)});
+
+        if (cursor.moveToFirst()) {
+            expense = new Expense(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(SPEND_ID)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(SPEND_NAME)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(SPEND_COST)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(CAT_NAME)),
+                    cursor.getString(cursor.getColumnIndexOrThrow(SPEND_DATE))
+            );
+        }
+
+        cursor.close();
+        db.close();
+        return expense;
+    }
+
+    public boolean updateExpense(int id, String name, int cost, String categoryName, String date) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            // Получаем ID категории по имени
+            int catId = getCategoryIdByName(db, categoryName);
+            if (catId == -1) {
+                Log.e("DB_ERROR", "Категория не найдена: " + categoryName);
+                return false;
+            }
+
+            ContentValues values = new ContentValues();
+            values.put(SPEND_NAME, name);
+            values.put(SPEND_CAT, catId);
+            values.put(SPEND_COST, cost);
+            values.put(SPEND_DATE, date);
+
+            int rowsAffected = db.update(
+                    T_SPEND,
+                    values,
+                    SPEND_ID + " = ?",
+                    new String[]{String.valueOf(id)});
+
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при обновлении траты", e);
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    public boolean deleteExpense(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            int rowsAffected = db.delete(
+                    T_SPEND,
+                    SPEND_ID + " = ?",
+                    new String[]{String.valueOf(id)});
+
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Ошибка при удалении траты", e);
             return false;
         } finally {
             db.close();

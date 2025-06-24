@@ -1,6 +1,8 @@
 package org.hse.finance;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,6 +22,7 @@ public class ExpensesActivity extends AppCompatActivity {
     private Spinner categorySpinner;
     private Button filterButton;
     private List<String> categories = new ArrayList<>();
+    private boolean dataChanged = false; // Флаг изменения данных
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,15 @@ public class ExpensesActivity extends AppCompatActivity {
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerViewExpenses);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ExpenseAdapter(expenseList);
+
+        // Инициализируем адаптер один раз с обработчиком кликов
+        adapter = new ExpenseAdapter(expenseList, expense -> {
+            // Обработка клика по элементу
+            Intent intent = new Intent(ExpensesActivity.this, ItemEdit.class);
+            intent.putExtra("expense_id", expense.getId());
+            startActivityForResult(intent, 1);
+        });
+
         recyclerView.setAdapter(adapter);
 
         categorySpinner = findViewById(R.id.spinnerCategories);
@@ -46,6 +57,16 @@ public class ExpensesActivity extends AppCompatActivity {
                     categories.get(categorySpinner.getSelectedItemPosition() - 1) : null;
             loadExpenses(selectedCategory, null, null);
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            dataChanged = true; // Устанавливаем флаг изменения
+            // Обновляем список после редактирования
+            loadExpenses(null, null, null);
+        }
     }
 
     private void setupCategorySpinner() {
@@ -64,5 +85,23 @@ public class ExpensesActivity extends AppCompatActivity {
         expenseList.clear();
         expenseList.addAll(dbHelper.getExpenses(category, startDate, endDate));
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Устанавливаем результат только если были изменения
+        if (dataChanged) {
+            setResult(RESULT_OK);
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Аналогично для других способов закрытия активности
+        if (dataChanged && isFinishing()) {
+            setResult(RESULT_OK);
+        }
+        super.onDestroy();
     }
 }

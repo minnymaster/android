@@ -19,7 +19,7 @@ public class QrScannerActivity extends AppCompatActivity {
     private void startQrScan() {
         ScanOptions options = new ScanOptions();
         options.setCameraId(0);
-        options.setTimeout(9000);
+        options.setTimeout(12000);
         options.setBarcodeImageEnabled(false); // Не сохранять изображение
         options.setPrompt("Наведите камеру на QR-код чека");
         options.setBeepEnabled(false);
